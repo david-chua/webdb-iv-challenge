@@ -1,5 +1,5 @@
 const express = require('express');
-const dishes = require('../helpers/dishesModel.js');
+const recipes = require('../helpers/recipesModel.js');
 
 const server = express.Router();
 
@@ -8,10 +8,10 @@ const errorHelper = (status, message, res) => {
 }
 
 server.get('/', (req,res) => {
-  dishes
+  recipes
     .get()
-    .then(dishes => {
-      res.json(dishes);
+    .then(recipes => {
+      res.json(recipes);
     })
     .catch(err => {
       return errorHelper(500, 'Internal Server Error', res);
@@ -20,16 +20,12 @@ server.get('/', (req,res) => {
 
 server.get('/:id', (req,res) => {
   const {id} = req.params;
-  dishes
-    .getDishById(id)
-    .then(dish => {
-      let recipesList = dish.map(recipe => recipe.recipe_name)
-      const dishInfo = {
-        dish_name: dish[0].dish_name,
-        dish_id: dish[0].id,
-        recipes: recipesList
-      }
-      res.json(dishInfo);
+  recipes
+    .getRecipeById(id)
+    .then(recipe => {
+      
+      console.log('dish', recipe)
+      res.json(recipe);
     })
     .catch(err => {
       console.log(err)
@@ -38,12 +34,13 @@ server.get('/:id', (req,res) => {
 })
 
 server.post('/', (req,res) => {
-  const newDish ={
-    dish_name: req.body.dish_name
+  const newRecipe ={
+    recipe_name: req.body.recipe_name,
+    dishes_id: req.body.dishes_id
   }
 
-  dishes
-    .insert(newDish)
+  recipes
+    .insert(newRecipe)
     .then(response => {
       console.log(response)
       res.json(response)
